@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Time Series Analysis{% endblock %}
+
+{% block content %}
+<div class="container mt-4 animate__animated animate__fadeIn">
+    <h2 class="mb-4"><i class="fas fa-clock me-2"></i>Time Series Analysis</h2>
+    
+    <div class="card shadow animate__animated animate__fadeInUp">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-chart-line me-2"></i>Price Trends by Model Year</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <img src="{{ url_for('static', filename='images/time_series.png') }}" 
+                         alt="Time Series Plot" 
+                         class="img-fluid rounded">
+                </div>
+                <div class="col-md-4">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-lightbulb me-2"></i>Key Insights</h5>
+                        <ul class="mb-0">
+                            {% if ts_stats %}
+                            <li>Peak price in {{ ts_stats.peak_year }} at ${{ ts_stats.peak_price }}</li>
+                            <li>{{ ts_stats.trend }} overall trend</li>
+                            <li>{{ ts_stats.yoy_change }}% year-over-year change</li>
+                            {% else %}
+                            <li>No time series statistics available</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-arrow-up me-2"></i>Top Years</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Avg Price</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if ts_stats and ts_stats.top_years %}
+                                        {% for year in ts_stats.top_years %}
+                                        <tr>
+                                            <td>{{ year[0] }}</td>
+                                            <td>${{ year[1] }}</td>
+                                            <td>{{ year[2] }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="3">No data available</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-arrow-down me-2"></i>Bottom Years</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Avg Price</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if ts_stats and ts_stats.bottom_years %}
+                                        {% for year in ts_stats.bottom_years %}
+                                        <tr>
+                                            <td>{{ year[0] }}</td>
+                                            <td>${{ year[1] }}</td>
+                                            <td>{{ year[2] }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="3">No data available</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 mb-4 animate__animated animate__fadeInLeft">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="fas fa-wave-square me-2"></i>Seasonal Decomposition</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Add seasonal decomposition content here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,3 @@
+Skewness of model_year: -1.0181390879495575
+Skewness of milage: 0.7320294483682999
+Skewness of price: 0.8636517597341374

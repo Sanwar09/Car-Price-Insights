@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Regression Analysis{% endblock %}
+
+{% block content %}
+<div class="container mt-4 animate__animated animate__fadeIn">
+    <h2 class="mb-4"><i class="fas fa-chart-line me-2"></i>Regression Analysis</h2>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4 animate__animated animate__fadeInLeft">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-tachometer-alt me-2"></i>Model Performance</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-6 mb-3">
+                            <div class="stat-card bg-light p-3 rounded">
+                                <div class="stat-value text-success">{{ (metrics.r2_score * 100)|round(2) }}%</div>
+                                <div class="stat-label">R² Score</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="stat-card bg-light p-3 rounded">
+                                <div class="stat-value text-info">{{ metrics.mse|round(2) }}</div>
+                                <div class="stat-label">MSE</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress mb-3" style="height: 25px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                             role="progressbar" 
+                             style="width: {{ metrics.r2_score * 100 }}%" 
+                             aria-valuenow="{{ metrics.r2_score * 100 }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            {{ (metrics.r2_score * 100)|round(1) }}%
+                        </div>
+                    </div>
+                    <p class="text-muted">The model explains {{ (metrics.r2_score * 100)|round(2) }}% of the variance in car prices.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4 animate__animated animate__fadeInRight">
+            <div class="card shadow h-100">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="fas fa-info-circle me-2"></i>Interpretation</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-primary">
+                        <h5><i class="fas fa-car me-2"></i>Mileage vs Price Relationship</h5>
+                        <p>The linear regression model shows how car prices change with mileage.</p>
+                    </div>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Good fit:</strong> R² > 0.7
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            <strong>Moderate fit:</strong> 0.5 < R² < 0.7
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-times-circle text-danger me-2"></i>
+                            <strong>Poor fit:</strong> R² < 0.5
+                        </li>
+                    </ul>
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        Lower MSE values indicate better model performance.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow animate__animated animate__fadeInUp">
+        <div class="card-header bg-info text-white">
+            <h4><i class="fas fa-chart-area me-2"></i>Regression Visualization</h4>
+        </div>
+        <div class="card-body text-center">
+            <img src="{{ url_for('static', filename='images/regression_plot.png') }}" 
+                 alt="Regression Plot" 
+                 class="img-fluid rounded animate__animated animate__zoomIn"
+                 style="max-height: 500px;">
+            <p class="mt-3 text-muted">Scatter plot showing actual vs predicted values with regression line.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Correlation Analysis{% endblock %}
+
+{% block content %}
+<div class="container mt-4 animate__animated animate__fadeIn">
+    <h2 class="mb-4"><i class="fas fa-project-diagram me-2"></i>Correlation Analysis</h2>
+    
+    <div class="card shadow animate__animated animate__fadeInUp">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-fire me-2"></i>Correlation Heatmap</h4>
+        </div>
+        <div class="card-body text-center">
+            <img src="{{ url_for('static', filename='images/correlation_matrix.png') }}" 
+                 alt="Correlation Matrix" 
+                 class="img-fluid rounded"
+                 style="max-width: 800px;">
+            <p class="mt-3 text-muted">Pearson correlation coefficients between numeric variables.</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 mb-4 animate__animated animate__fadeInLeft">
+            <div class="card shadow h-100">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="fas fa-thumbs-up me-2"></i>Strongest Positive Correlations</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Variables</th>
+                                <th>Correlation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pair in top_positive %}
+                            <tr>
+                                <td>{{ pair[0] }} ↔ {{ pair[1] }}</td>
+                                <td class="text-success">{{ pair[2]|round(3) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="alert alert-light mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Values close to 1 indicate strong positive relationship.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4 animate__animated animate__fadeInRight">
+            <div class="card shadow h-100">
+                <div class="card-header bg-danger text-white">
+                    <h4><i class="fas fa-thumbs-down me-2"></i>Strongest Negative Correlations</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Variables</th>
+                                <th>Correlation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pair in top_negative %}
+                            <tr>
+                                <td>{{ pair[0] }} ↔ {{ pair[1] }}</td>
+                                <td class="text-danger">{{ pair[2]|round(3) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="alert alert-light mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Values close to -1 indicate strong negative relationship.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mt-4 animate__animated animate__fadeInUp">
+        <div class="card-header bg-info text-white">
+            <h4><i class="fas fa-comment-dots me-2"></i>Interpretation Guide</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card bg-light mb-3">
+                        <div class="card-body text-center">
+                            <h1 class="display-4 text-success">0.7 to 1.0</h1>
+                            <p class="mb-0">Strong positive correlation</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light mb-3">
+                        <div class="card-body text-center">
+                            <h1 class="display-4 text-warning">-0.3 to 0.3</h1>
+                            <p class="mb-0">Little to no correlation</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light mb-3">
+                        <div class="card-body text-center">
+                            <h1 class="display-4 text-danger">-1.0 to -0.7</h1>
+                            <p class="mb-0">Strong negative correlation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-warning">
+                <h5><i class="fas fa-exclamation-triangle me-2"></i>Correlation ≠ Causation</h5>
+                <p>High correlation doesn't imply one variable causes changes in another. Always consider external factors.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

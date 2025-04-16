@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Data Analysis{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4 animate__animated animate__fadeIn">Data Analysis</h2>
+    
+    <div class="row">
+        <div class="col-md-12 mb-4 animate__animated animate__fadeInUp">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4>Univariate Analysis - Price Distribution</h4>
+                </div>
+                <div class="card-body">
+                    <img src="{{ plots.univariate }}" alt="Univariate Analysis" class="img-fluid rounded animate__animated animate__fadeIn">
+                    <p class="mt-3">This histogram shows the distribution of car prices in our dataset after cleaning.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12 mb-4 animate__animated animate__fadeInUp">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4>Bivariate Analysis - Mileage vs Price</h4>
+                </div>
+                <div class="card-body">
+                    <img src="{{ plots.bivariate }}" alt="Bivariate Analysis" class="img-fluid rounded animate__animated animate__fadeIn">
+                    <p class="mt-3">This scatter plot shows the relationship between mileage and price.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12 mb-4 animate__animated animate__fadeInUp">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4>Multivariate Analysis - Correlation Heatmap</h4>
+                </div>
+                <div class="card-body">
+                    <img src="{{ plots.multivariate }}" alt="Multivariate Analysis" class="img-fluid rounded animate__animated animate__fadeIn">
+                    <p class="mt-3">This heatmap shows correlations between all numerical variables in the dataset.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

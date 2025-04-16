@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Statistics Analysis{% endblock %}
+
+{% block content %}
+<div class="container mt-4 animate__animated animate__fadeIn">
+    <h2 class="mb-4"><i class="fas fa-chart-bar me-2"></i>Statistical Analysis</h2>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow animate__animated animate__fadeInLeft">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-project-diagram me-2"></i>Kurtosis & Skewness</h4>
+                </div>
+                <div class="card-body">
+                    <div class="stat-card">
+                        <div class="stat-value text-primary">{{ stats.kurtosis|round(2) }}</div>
+                        <div class="stat-label">Price Kurtosis</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-info">{{ stats.skewness|round(2) }}</div>
+                        <div class="stat-label">Price Skewness</div>
+                    </div>
+                    <p class="mt-3">Kurtosis measures tail heaviness, while skewness measures asymmetry in the price distribution.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow animate__animated animate__fadeInRight">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="fas fa-balance-scale-left me-2"></i>Variable Skewness</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Variable</th>
+                                <th>Skewness</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for var, val in stats.skewness_values.items() %}
+                            <tr>
+                                <td>{{ var }}</td>
+                                <td class="{{ 'text-danger' if val|abs > 1 else 'text-success' }}">{{ val|round(2) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i>Values > |1| indicate significant skewness.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow animate__animated animate__fadeInUp">
+        <div class="card-header bg-warning text-dark">
+            <h4><i class="fas fa-comment-dots me-2"></i>Interpretation</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Kurtosis Insights</h5>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item">
+                            <i class="fas fa-arrow-up text-success me-2"></i>
+                            Positive: Heavy tails (outliers likely)
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-arrow-down text-danger me-2"></i>
+                            Negative: Light tails (few outliers)
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Skewness Insights</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="fas fa-arrow-right text-primary me-2"></i>
+                            Positive: Right-skewed (mean > median)
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-arrow-left text-info me-2"></i>
+                            Negative: Left-skewed (mean < median)
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
