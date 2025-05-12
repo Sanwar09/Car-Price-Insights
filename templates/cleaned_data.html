@@ -1,21 +1,73 @@
-{% extends "base.html" %}
-
-{% block title %}Cleaned Data{% endblock %}
-
-{% block content %}
-<div class="container mt-4 animate__animated animate__fadeIn">
-    <h2 class="mb-4"><i class="fas fa-broom me-2"></i>Cleaned Dataset</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cleaned Data - Car Price Insights</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <div class="card shadow animate__animated animate__fadeInUp">
-        <div class="card-header bg-primary text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <h4 class="mb-0"><i class="fas fa-table me-2"></i>Processed Data Preview</h4>
-                <span class="badge bg-light text-primary">{{ data_shape[0] }} rows × {{ data_shape[1] }} columns</span>
-            </div>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <style>
+        body { background: #f8f9fa; }
+        .navbar { background-color: #764ba2; }
+        .navbar-brand, .nav-link { color: #fff; }
+        .nav-link:hover { color: #e2e6ea; }
+        .card-header { background-color: #764ba2; color: white; font-weight: bold; }
+        .btn-outline-primary { border-color: #764ba2; color: #764ba2; }
+        .btn-outline-primary:hover { background-color: #764ba2; color: white; }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('dashboard') }}">Car Analysis</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('iqr') }}">IQR</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('cleaned_data') }}">Cleaned Data</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('stats') }}">Stats</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('time_series') }}">Time Series</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('correlation') }}">Correlation</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('regression') }}">Regression</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('search_model') }}">Search Model</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('predict_price') }}">Predict Price</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container mt-5 animate__animated animate__fadeIn">
+    <h2 class="text-center mb-4" style="color: #6f42c1;">
+        <i class="fas fa-broom me-2"></i>Cleaned Dataset
+    </h2>
+
+    <!-- Processed Data Preview -->
+    <div class="card shadow mb-4 animate__animated animate__fadeInUp">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-table me-2"></i>Processed Data Preview</h5>
+            <span class="badge bg-light text-primary">{{ data_shape[0] }} rows × {{ data_shape[1] }} columns</span>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="table table-striped table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             {% for column in data_columns %}
@@ -35,53 +87,38 @@
                 </table>
             </div>
         </div>
-        <div class="card-footer bg-light">
-            <div class="row">
-                <div class="col-md-6">
-                    <button class="btn btn-outline-primary">
-                        <i class="fas fa-download me-2"></i>Download CSV
-                    </button>
-                </div>
-                <div class="col-md-6 text-end">
-                    <small class="text-muted">Showing {{ data_sample|length }} of {{ data_shape[0] }} records</small>
-                </div>
-            </div>
+        <div class="card-footer bg-light d-flex justify-content-between align-items-center">
+            <button class="btn btn-outline-primary">
+                <i class="fas fa-download me-2"></i>Download CSV
+            </button>
+            <small class="text-muted">Showing {{ data_sample|length }} of {{ data_shape[0] }} records</small>
         </div>
     </div>
 
-    <div class="row mt-4">
+    <!-- Cleaning Steps and Composition -->
+    <div class="row">
+        <!-- Cleaning Steps -->
         <div class="col-md-6 mb-4 animate__animated animate__fadeInLeft">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h4><i class="fas fa-tasks me-2"></i>Cleaning Steps Applied</h4>
+            <div class="card shadow h-100">
+                <div class="card-header text-white" style="background-color: #8e44ad;">
+                    <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>Cleaning Steps Applied</h5>
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            Removed {{ cleaning_stats.missing_values }} missing values
-                        </li>
-                        <li class="list-group-item">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            Fixed {{ cleaning_stats.invalid_entries }} invalid entries
-                        </li>
-                        <li class="list-group-item">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            Removed {{ cleaning_stats.outliers }} outliers using IQR
-                        </li>
-                        <li class="list-group-item">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            Standardized {{ cleaning_stats.standardized }} columns
-                        </li>
+                        <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Removed {{ cleaning_stats.missing_values }} missing values</li>
+                        <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Fixed {{ cleaning_stats.invalid_entries }} invalid entries</li>
+                        <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Removed {{ cleaning_stats.outliers }} outliers using IQR</li>
+                        <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Standardized {{ cleaning_stats.standardized }} columns</li>
                     </ul>
                 </div>
             </div>
         </div>
 
+        <!-- Data Composition Chart -->
         <div class="col-md-6 mb-4 animate__animated animate__fadeInRight">
-            <div class="card shadow">
-                <div class="card-header bg-info text-white">
-                    <h4><i class="fas fa-chart-pie me-2"></i>Data Composition</h4>
+            <div class="card shadow h-100">
+                <div class="card-header text-white" style="background-color: #9b59b6;">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Data Composition</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="dataCompositionChart" height="200"></canvas>
@@ -91,10 +128,10 @@
     </div>
 </div>
 
-{% block scripts %}
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Data composition chart
     const ctx = document.getElementById('dataCompositionChart').getContext('2d');
     new Chart(ctx, {
         type: 'doughnut',
@@ -102,20 +139,10 @@
             labels: ['Numeric', 'Categorical', 'Text', 'Datetime'],
             datasets: [{
                 data: [45, 30, 15, 10],
-                backgroundColor: [
-                    '#4e73df',
-                    '#1cc88a',
-                    '#36b9cc',
-                    '#f6c23e'
-                ],
-                hoverBackgroundColor: [
-                    '#2e59d9',
-                    '#17a673',
-                    '#2c9faf',
-                    '#dda20a'
-                ],
-                hoverBorderColor: "rgba(234, 236, 244, 1)",
-            }],
+                backgroundColor: ['#764ba2', '#9b59b6', '#af7ac5', '#d7bde2'],
+                hoverBackgroundColor: ['#5e3391', '#884ea0', '#a569bd', '#c39bd3'],
+                hoverBorderColor: 'rgba(234, 236, 244, 1)'
+            }]
         },
         options: {
             maintainAspectRatio: false,
@@ -124,9 +151,9 @@
                     position: 'bottom'
                 }
             },
-            cutout: '70%',
-        },
+            cutout: '70%'
+        }
     });
 </script>
-{% endblock %}
-{% endblock %}
+</body>
+</html>

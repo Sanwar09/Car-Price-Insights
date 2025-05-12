@@ -1,77 +1,80 @@
 {% extends "base.html" %}
 
-{% block title %}IQR Analysis{% endblock %}
+{% block title %}IQR Outlier Analysis - Car Price Insights{% endblock %}
 
 {% block content %}
-<div class="container mt-4 animate__animated animate__fadeIn">
-    <h2 class="mb-4"><i class="fas fa-filter me-2"></i>IQR Outlier Analysis</h2>
-    
-    <div class="row">
-        <div class="col-md-6 mb-4 animate__animated animate__fadeInLeft">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h4><i class="fas fa-box-open me-2"></i>Before IQR</h4>
-                </div>
-                <div class="card-body">
-                    <img src="{{ url_for('static', filename='images/iqr_before.png') }}" 
-                         alt="Before IQR" 
-                         class="img-fluid rounded mb-3">
-                    <p class="text-muted">Original data distribution showing potential outliers.</p>
-                </div>
-            </div>
-        </div>
+<div class="container mt-5">
+    <h2 class="text-center mb-4"><i class="fas fa-filter me-2"></i>IQR Outlier Analysis</h2>
 
-        <div class="col-md-6 mb-4 animate__animated animate__fadeInRight">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h4><i class="fas fa-box me-2"></i>After IQR</h4>
+    <!-- Before & After IQR Images -->
+    <div class="card mb-4">
+        <div class="card-header" style="background-color: #764ba2; color: white;">
+            <i class="fas fa-chart-area me-2"></i>Distribution Before and After IQR
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col-md-6 mb-3">
+                    <img src="{{ url_for('static', filename='images/before_iqr.png') }}" 
+                         alt="Before IQR" 
+                         class="img-fluid rounded shadow-sm">
+                    <p class="text-muted mt-2">Original data distribution with potential outliers.</p>
                 </div>
-                <div class="card-body">
-                    <img src="{{ url_for('static', filename='images/iqr_after.png') }}" 
+                <div class="col-md-6 mb-3">
+                    <img src="{{ url_for('static', filename='images/after_iqr.png') }}" 
                          alt="After IQR" 
-                         class="img-fluid rounded mb-3">
-                    <p class="text-muted">Data after applying IQR outlier removal (1.5 × IQR rule).</p>
+                         class="img-fluid rounded shadow-sm">
+                    <p class="text-muted mt-2">Cleaned data after IQR (1.5 × IQR rule).</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card shadow animate__animated animate__fadeInUp">
-        <div class="card-header bg-info text-white">
-            <h4><i class="fas fa-calculator me-2"></i>IQR Calculation</h4>
+    <!-- IQR Stats Summary -->
+    <div class="card mb-4">
+        <div class="card-header" style="background-color: #764ba2; color: white;">
+            <i class="fas fa-calculator me-2"></i>IQR Calculation Summary
         </div>
         <div class="card-body">
             <div class="row text-center">
                 <div class="col-md-3 mb-3">
-                    <div class="stat-card bg-light p-3 rounded">
-                        <div class="stat-value text-primary">{{ iqr_stats.q1|round(2) }}</div>
-                        <div class="stat-label">Q1 (25th %ile)</div>
+                    <div class="p-3 bg-light border rounded shadow-sm">
+                        <div class="fs-4 text-primary fw-bold">{{ iqr_stats.q1|round(2) }}</div>
+                        <div class="small text-muted">Q1 (25th percentile)</div>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="stat-card bg-light p-3 rounded">
-                        <div class="stat-value text-success">{{ iqr_stats.median|round(2) }}</div>
-                        <div class="stat-label">Median</div>
+                    <div class="p-3 bg-light border rounded shadow-sm">
+                        <div class="fs-4 text-success fw-bold">{{ iqr_stats.median|round(2) }}</div>
+                        <div class="small text-muted">Median</div>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="stat-card bg-light p-3 rounded">
-                        <div class="stat-value text-warning">{{ iqr_stats.q3|round(2) }}</div>
-                        <div class="stat-label">Q3 (75th %ile)</div>
+                    <div class="p-3 bg-light border rounded shadow-sm">
+                        <div class="fs-4 text-warning fw-bold">{{ iqr_stats.q3|round(2) }}</div>
+                        <div class="small text-muted">Q3 (75th percentile)</div>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="stat-card bg-light p-3 rounded">
-                        <div class="stat-value text-danger">{{ iqr_stats.iqr|round(2) }}</div>
-                        <div class="stat-label">IQR</div>
+                    <div class="p-3 bg-light border rounded shadow-sm">
+                        <div class="fs-4 text-danger fw-bold">{{ iqr_stats.iqr|round(2) }}</div>
+                        <div class="small text-muted">IQR</div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="alert alert-warning mt-3">
-                <h5><i class="fas fa-exclamation-triangle me-2"></i>Outlier Bounds</h5>
-                <p>Lower Bound: {{ iqr_stats.lower_bound|round(2) }} | Upper Bound: {{ iqr_stats.upper_bound|round(2) }}</p>
-                <p class="mb-0">{{ iqr_stats.outliers_removed }} outliers were removed from the dataset.</p>
+    <!-- Outlier Bounds -->
+    <div class="card">
+        <div class="card-header" style="background-color: #764ba2; color: white;">
+            <i class="fas fa-exclamation-triangle me-2"></i>Outlier Bounds & Removal
+        </div>
+        <div class="card-body">
+            <p><strong>Lower Bound:</strong> {{ iqr_stats.lower_bound|round(2) }} | 
+               <strong>Upper Bound:</strong> {{ iqr_stats.upper_bound|round(2) }}</p>
+            <p><strong>{{ iqr_stats.outliers_removed }}</strong> outliers were removed from the dataset.</p>
+            <div class="alert alert-light mt-3">
+                <i class="fas fa-info-circle me-2"></i>Outliers are values that fall outside 1.5 × IQR from Q1 and Q3.
             </div>
         </div>
     </div>

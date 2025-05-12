@@ -18,32 +18,19 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('analysis') }}">Analysis</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('iqr') }}">IQR</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('cleaned_data') }}">Cleaned Data</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('stats') }}">Statistics</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('time_series') }}">Time Series</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('correlation') }}">Correlation</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('regression') }}">Regression</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('analysis') }}">Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('iqr') }}">IQR</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('cleaned_data') }}">Cleaned Data</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('stats') }}">Statistics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('time_series') }}">Time Series</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('correlation') }}">Correlation</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('regression') }}">Regression</a></li>
+                    <!-- 🔽 New Links -->
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('search_model') }}">Search Car</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('predict_price') }}">Predict Price</a></li>
                 </ul>
                 <div class="d-flex">
-                    <span class="navbar-text me-3 animate__animated animate__fadeIn">
-                        Welcome, {{ username }}!
-                    </span>
+                    <span class="navbar-text me-3 animate__animated animate__fadeIn">Welcome, {{ username }}!</span>
                     <a href="{{ url_for('logout') }}" class="btn btn-outline-light animate__animated animate__fadeInRight">Logout</a>
                 </div>
             </div>

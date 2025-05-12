@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Predict Future Car Price{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4"><i class="fas fa-car me-2"></i>Predict Future Car Price</h2>
+
+    <div class="card shadow">
+        <div class="card-header" style="background-color: #764ba2; color: white;">
+            <i class="fas fa-search-dollar me-2"></i>Prediction Input
+        </div>
+        <div class="card-body">
+            <!-- Form to select brand, model, and year -->
+            <form method="POST">
+                <!-- Select Brand -->
+                <div class="form-group mb-3">
+                    <label for="brand" class="fw-bold">Select Brand:</label>
+                    <select name="brand" id="brand" class="form-control" required>
+                        <option value="">Select a Brand</option>
+                        {% for brand in brands %}
+                            <option value="{{ brand }}" {% if brand == selected_brand %}selected{% endif %}>{{ brand }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Select Model -->
+                <div class="form-group mb-3" id="model_div" style="display: {% if not selected_brand %}none{% else %}block{% endif %};">
+                    <label for="model" class="fw-bold">Select Model:</label>
+                    <select name="model" id="model" class="form-control" required>
+                        {% if selected_brand %}
+                            {% set models = models_by_brand[selected_brand] %}
+                            {% for model in models %}
+                                <option value="{{ model }}" {% if model == selected_model %}selected{% endif %}>{{ model }}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="">Please select a brand first</option>
+                        {% endif %}
+                    </select>
+                </div>
+
+                <!-- Enter Year -->
+                <div class="form-group mb-3" id="year_div" style="display: {% if not selected_model %}none{% else %}block{% endif %};">
+                    <label for="year" class="fw-bold">Enter Year (e.g. 2026):</label>
+                    <input type="number" name="year" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn mt-3 px-4" style="background-color: #764ba2; color: white;">
+                    <i class="fas fa-magic me-1"></i> Predict
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Display Prediction Result -->
+    {% if prediction %}
+    <div class="alert alert-info mt-4">
+        <strong>Predicted Price:</strong> {{ prediction }}
+    </div>
+    {% endif %}
+</div>
+
+<!-- JavaScript to handle dynamic population of models based on brand -->
+<script>
+    document.getElementById('brand').addEventListener('change', function () {
+        var selectedBrand = this.value;
+        var modelDiv = document.getElementById('model_div');
+        var yearDiv = document.getElementById('year_div');
+        var modelSelect = document.getElementById('model');
+
+        if (selectedBrand) {
+            modelDiv.style.display = 'block';
+            updateModels(selectedBrand, modelSelect);
+        } else {
+            modelDiv.style.display = 'none';
+            yearDiv.style.display = 'none';
+        }
+    });
+
+    document.getElementById('model').addEventListener('change', function () {
+        var selectedModel = this.value;
+        var yearDiv = document.getElementById('year_div');
+        yearDiv.style.display = selectedModel ? 'block' : 'none';
+    });
+
+    function updateModels(brand, modelSelect) {
+        var modelsForBrand = {{ models_by_brand | tojson }};
+
+        modelSelect.innerHTML = '';
+        if (modelsForBrand[brand]) {
+            modelsForBrand[brand].forEach(function (model) {
+                var option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                modelSelect.appendChild(option);
+            });
+        }
+    }
+</script>
+{% endblock %}
