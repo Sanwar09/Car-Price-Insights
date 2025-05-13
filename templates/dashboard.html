@@ -3,199 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Analysis - Dashboard</title>
-    <!-- Bootstrap CSS -->
+    <title>Dashboard | Car Price Insight</title>
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         body {
-            background: #f8f9fa;
-            font-family: Arial, sans-serif;
+            background-color: #fdfbff;
+            font-family: 'Segoe UI', sans-serif;
         }
         .navbar {
-            background-color: #764ba2;
+            background: linear-gradient(to right, #764ba2, #667eea);
         }
-        .navbar-brand, .navbar-nav .nav-link {
-            color: #fff;
-        }
-        .navbar-nav .nav-link:hover {
-            color: #e2e6ea;
-        }
-        .container {
-            margin-top: 30px;
-        }
-        .statistics-card {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        .statistics-card .card-body {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .statistics-card .card-body i {
-            font-size: 3rem;
-        }
-        .statistics-card .card-body h5 {
-            font-size: 2rem;
-        }
-        .card-header {
-            background: #764ba2;
-            color: white;
-            text-align: center;
-            font-weight: bold;
-        }
-        .btn-modern {
-            padding: 12px 24px;
-            border-radius: 10px;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+        .navbar-brand, .nav-link {
+            color: #fff !important;
             font-weight: 600;
-            transition: all 0.3s ease-in-out;
         }
-        .btn-modern i {
-            margin-right: 8px;
+        .hero {
+            background: linear-gradient(to right, #764ba2, #667eea);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
         }
-        .btn-modern:hover {
-            transform: translateY(-2px);
-            opacity: 0.9;
+        .hero h1 {
+            font-weight: bold;
+            font-size: 2.6rem;
         }
-        .operation-btns a {
-            margin: 10px 12px;
-        }
-        .cleaned-overview ul {
-            padding-left: 18px;
-            font-size: 0.95rem;
-        }
-        .cleaned-overview .btn {
+        .hero p {
+            font-size: 1.15rem;
             margin-top: 10px;
+        }
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .section-title {
+            margin: 50px 0 20px;
+            font-weight: 700;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        .icon-btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 16px;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 120px;
+        }
+        .icon-btn i {
+            margin-bottom: 8px;
+            font-size: 1.7rem;
+        }
+        .btn-outline-purple {
+            border-color: #764ba2;
+            color: #764ba2;
+        }
+        .btn-outline-purple:hover {
+            background-color: #764ba2;
+            color: white;
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 15px 0;
+            margin-top: 60px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark">
+<nav class="navbar navbar-expand-lg">
     <div class="container">
-        <a class="navbar-brand" href="#">Car Analysis</a>
+        <a class="navbar-brand" href="#">Car Price Insight</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon bg-light rounded"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link active" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
-<!-- Main Container -->
-<div class="container">
-    <!-- Welcome -->
-    <div class="row">
-        <div class="col-12 text-center my-4">
-            <h2>Welcome, {{ username }}!</h2>
-            <p class="lead">Explore insights of car prices with interactive tools and predictions.</p>
-        </div>
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>Hello, {{ username }}!</h1>
+        <p>Welcome to your interactive dashboard – explore, clean, analyze, and predict car prices effortlessly.</p>
     </div>
+</section>
 
-    <!-- Statistics -->
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card statistics-card">
+<!-- Stats Overview -->
+<div class="container mt-5">
+    <div class="row text-center g-4">
+        <div class="col-md-4">
+            <div class="card py-4">
                 <div class="card-body">
-                    <i class="fas fa-car text-primary"></i>
-                    <div>
-                        <h5>Total Cars</h5>
-                        <p>{{ total_cars }}</p>
-                    </div>
+                    <i class="fas fa-car fa-2x text-purple mb-2"></i>
+                    <h5>Total Cars</h5>
+                    <p class="fs-4">{{ total_cars }}</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="card statistics-card">
+        <div class="col-md-4">
+            <div class="card py-4">
                 <div class="card-body">
-                    <i class="fas fa-chart-line text-success"></i>
-                    <div>
-                        <h5>Prediction Accuracy</h5>
-                        <p>{{ price_prediction_accuracy }}%</p>
-                    </div>
+                    <i class="fas fa-bullseye fa-2x text-purple mb-2"></i>
+                    <h5>Prediction Accuracy</h5>
+                    <p class="fs-4">{{ price_prediction_accuracy }}%</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="card statistics-card">
+        <div class="col-md-4">
+            <div class="card py-4">
                 <div class="card-body">
-                    <i class="fas fa-cogs text-warning"></i>
-                    <div>
-                        <h5>Data Cleaned</h5>
-                        <p>{{ data_cleaned }}%</p>
-                    </div>
+                    <i class="fas fa-broom fa-2x text-purple mb-2"></i>
+                    <h5>Data Cleaned</h5>
+                    <p class="fs-4">{{ data_cleaned }}%</p>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Cleaned Data Overview (compact height) -->
-    <div class="row">
-        <div class="col-md-12 mb-4">
-            <div class="card statistics-card cleaned-overview">
-                <div class="card-header">Cleaned Data Overview</div>
-                <div class="card-body py-3">
-                    <ul class="mb-2">
-                        <li><strong>Missing Values:</strong> {{ cleaned_data['missing_values'] }}</li>
-                        <li><strong>Invalid Entries:</strong> {{ cleaned_data['invalid_entries'] }}</li>
-                        <li><strong>Outliers Removed:</strong> {{ cleaned_data['outliers'] }}</li>
-                        <li><strong>Standardized Entries:</strong> {{ cleaned_data['standardized'] }}</li>
-                    </ul>
-                    <div class="text-center">
-                        <a href="{{ url_for('cleaned_data') }}" class="btn btn-primary btn-modern">
-                            <i class="fas fa-database"></i> View Cleaned Data
-                        </a>
-                    </div>
-                </div>
+<!-- Cleaned Data Summary -->
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-purple text-white fw-bold" style="background-color: #764ba2;">Cleaned Data Summary</div>
+        <div class="card-body">
+            <ul class="list-unstyled">
+                <li><strong>Missing Values:</strong> {{ cleaned_data['missing_values'] }}</li>
+                <li><strong>Invalid Entries:</strong> {{ cleaned_data['invalid_entries'] }}</li>
+                <li><strong>Outliers Removed:</strong> {{ cleaned_data['outliers'] }}</li>
+                <li><strong>Standardized Entries:</strong> {{ cleaned_data['standardized'] }}</li>
+            </ul>
+            <div class="text-center mt-3">
+                <a href="{{ url_for('cleaned_data') }}" class="btn btn-outline-purple icon-btn">
+                    <i class="fas fa-database"></i> View Full Cleaned Data
+                </a>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Operation Buttons -->
-    <div class="row operation-btns text-center mt-4">
-        <div class="col-12">
-            <a href="{{ url_for('analysis') }}" class="btn btn-primary btn-modern">
-                <i class="fas fa-chart-pie"></i> Analysis
+<!-- Operations Section -->
+<div class="container mt-5">
+    <h2 class="section-title">Data Exploration & Prediction Tools</h2>
+    <div class="row g-3">
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('analysis') }}" class="btn btn-outline-purple icon-btn">
+                <i class="fas fa-chart-pie"></i> Visual Analysis<br><small>Charts and distributions</small>
             </a>
-            <a href="{{ url_for('iqr') }}" class="btn btn-secondary btn-modern">
-                <i class="fas fa-sliders-h"></i> IQR Cleaning
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('iqr') }}" class="btn btn-outline-purple icon-btn">
+                <i class="fas fa-sliders-h"></i> IQR Cleaning<br><small>Remove price outliers</small>
             </a>
-            <a href="{{ url_for('stats') }}" class="btn btn-info btn-modern">
-                <i class="fas fa-table"></i> Stats
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('stats') }}" class="btn btn-outline-purple icon-btn">
+                <i class="fas fa-table"></i> Statistics<br><small>Detailed numeric summary</small>
             </a>
-            <a href="{{ url_for('time_series') }}" class="btn btn-warning btn-modern text-white">
-                <i class="fas fa-clock"></i> Time Series
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('time_series') }}" class="btn btn-outline-purple icon-btn">
+                <i class="fas fa-clock"></i> Time Series<br><small>Trend over years</small>
             </a>
-            <a href="{{ url_for('correlation') }}" class="btn btn-success btn-modern">
-                <i class="fas fa-project-diagram"></i> Correlation
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('correlation') }}" class="btn btn-outline-purple icon-btn">
+                <i class="fas fa-project-diagram"></i> Correlation<br><small>Understand feature impact</small>
             </a>
-            <a href="{{ url_for('regression') }}" class="btn btn-dark btn-modern">
-                <i class="fas fa-chart-area"></i> Regression
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('regression') }}" class="btn btn-outline-purple icon-btn">
+                <i class="fas fa-chart-line"></i> Regression<br><small>Model-based pricing</small>
             </a>
-            <a href="{{ url_for('search_model') }}" class="btn btn-outline-primary btn-modern">
-                <i class="fas fa-search"></i> Search Model
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('search_model') }}" class="btn btn-outline-purple icon-btn">
+                <i class="fas fa-search"></i> Search Model<br><small>Find specific cars</small>
             </a>
-            <a href="{{ url_for('predict_price') }}" class="btn btn-outline-success btn-modern">
-                <i class="fas fa-coins"></i> Predict Price
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{{ url_for('predict_price') }}" class="btn btn-outline-purple icon-btn">
+                <i class="fas fa-coins"></i> Predict Price<br><small>Forecast based on year</small>
             </a>
         </div>
     </div>
 </div>
 
-<!-- Scripts -->
+<!-- Footer -->
+<footer class="mt-5">
+    <div class="container">
+        <small>&copy; 2025 Car Price Insight. All rights reserved.</small>
+    </div>
+</footer>
+
+<!-- Bootstrap Script -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

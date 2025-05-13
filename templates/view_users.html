@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Registered Users</title>
+</head>
+<body>
+    <h1>Registered Users</h1>
+    <ul>
+        {% for username, password_hash in users.items() %}
+            <li><strong>{{ username }}:</strong> {{ password_hash }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

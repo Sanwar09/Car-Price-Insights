@@ -21,15 +21,13 @@ def home():
     return render_template('index.html')
 
 
-# Login required decorator
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'username' not in session:
-            return redirect(url_for('login', next=request.url))  # Redirect to login if not logged in
+            return redirect(url_for('login', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
-
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -38,34 +36,67 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        if username in users and check_password_hash(users[username], password):
-            session['username'] = username
-            next_page = request.args.get('next')  # Capture the 'next' parameter if any
-            return redirect(next_page) if next_page else redirect(url_for('dashboard'))
+        print(f"Login attempt: {username}")  # Debugging: print username
+        
+        if username in users:
+            stored_password_hash = users[username]
+            print(f"Stored password hash for {username}: {stored_password_hash}")  # Debugging: print the stored password hash
+            if check_password_hash(stored_password_hash, password):
+                session['username'] = username
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('dashboard'))
+            else:
+                flash('Invalid username or password', 'danger')
+                print(f"Password mismatch for {username}")  # Debugging: print password mismatch
         else:
             flash('Invalid username or password', 'danger')
+            print(f"Username {username} not found")  # Debugging: print username not found
     return render_template('login.html')
+
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)  # Clear the session when logging out
-    return redirect(url_for('login'))  # Redirect to the login page after logout
+    session.pop('username', None)
+    return redirect(url_for('home'))  # Redirect to home page after logout
+
+
+# ✅ Registration Route Added
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        if username in users:
+            flash('Username already exists.', 'warning')
+        else:
+            hashed_password = generate_password_hash(password)
+            users[username] = hashed_password
+            print(f"New user registered: {username} with hashed password: {hashed_password}")  # Debugging: print user and hashed password
+            flash('Registration successful. Please log in.', 'success')
+            return redirect(url_for('login'))
+    return render_template('register.html')
+
+
+# Route to view all registered users
+@app.route('/view_users')
+def view_users():
+    return render_template('view_users.html', users=users)
+
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    df = pd.read_csv('cleaned_data.csv')  # Adjust this as needed
+    df = pd.read_csv('cleaned_data.csv')
     total_cars = len(df)
     price_prediction_accuracy = 98.0
     data_cleaned = 78.0
-
     cleaned_data_stats = {
         'missing_values': 123,
         'invalid_entries': 45,
         'outliers': 87,
         'standardized': 5678
     }
-
     return render_template(
         'dashboard.html',
         username=session['username'],
@@ -74,8 +105,6 @@ def dashboard():
         data_cleaned=data_cleaned,
         cleaned_data=cleaned_data_stats
     )
-
-
 
 @app.route('/analysis')
 @login_required
