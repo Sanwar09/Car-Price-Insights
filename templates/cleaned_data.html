@@ -71,7 +71,7 @@
                     <thead class="table-light">
                         <tr>
                             {% for column in data_columns %}
-                            <th>{{ column }}</th>
+                                <th>{{ column }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
@@ -79,7 +79,7 @@
                         {% for row in data_sample %}
                         <tr>
                             {% for value in row %}
-                            <td>{{ value }}</td>
+                                <td>{{ value }}</td>
                             {% endfor %}
                         </tr>
                         {% endfor %}
@@ -88,9 +88,9 @@
             </div>
         </div>
         <div class="card-footer bg-light d-flex justify-content-between align-items-center">
-            <button class="btn btn-outline-primary">
+            <a href="{{ url_for('download_cleaned_data') }}" class="btn btn-outline-primary" download>
                 <i class="fas fa-download me-2"></i>Download CSV
-            </button>
+            </a>
             <small class="text-muted">Showing {{ data_sample|length }} of {{ data_shape[0] }} records</small>
         </div>
     </div>
@@ -138,7 +138,7 @@
         data: {
             labels: ['Numeric', 'Categorical', 'Text', 'Datetime'],
             datasets: [{
-                data: [45, 30, 15, 10],
+                data: [45, 30, 15, 10],  // Optional: Update these dynamically if needed
                 backgroundColor: ['#764ba2', '#9b59b6', '#af7ac5', '#d7bde2'],
                 hoverBackgroundColor: ['#5e3391', '#884ea0', '#a569bd', '#c39bd3'],
                 hoverBorderColor: 'rgba(234, 236, 244, 1)'

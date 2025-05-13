@@ -1,25 +1,18 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import os
-from car_analysis import perform_analysis
 import pandas as pd
+from car_analysis import perform_analysis
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
 
-# Dummy user database (in production, use a real database)
+# Dummy user database
 users = {
     "admin": generate_password_hash("admin123"),
     "user": generate_password_hash("user123")
 }
-
-@app.route('/')
-def home():
-    if 'username' in session:
-        return redirect(url_for('dashboard'))
-    return render_template('index.html')
-
 
 def login_required(f):
     @wraps(f)
@@ -29,81 +22,62 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@app.route('/')
+def home():
+    if 'username' in session:
+        return redirect(url_for('dashboard'))
+    return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
-        print(f"Login attempt: {username}")  # Debugging: print username
-        
-        if username in users:
-            stored_password_hash = users[username]
-            print(f"Stored password hash for {username}: {stored_password_hash}")  # Debugging: print the stored password hash
-            if check_password_hash(stored_password_hash, password):
-                session['username'] = username
-                next_page = request.args.get('next')
-                return redirect(next_page) if next_page else redirect(url_for('dashboard'))
-            else:
-                flash('Invalid username or password', 'danger')
-                print(f"Password mismatch for {username}")  # Debugging: print password mismatch
+        if username in users and check_password_hash(users[username], password):
+            session['username'] = username
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('dashboard'))
         else:
             flash('Invalid username or password', 'danger')
-            print(f"Username {username} not found")  # Debugging: print username not found
     return render_template('login.html')
-
 
 @app.route('/logout')
 def logout():
     session.pop('username', None)
-    return redirect(url_for('home'))  # Redirect to home page after logout
+    return redirect(url_for('home'))
 
-
-# ✅ Registration Route Added
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
         if username in users:
             flash('Username already exists.', 'warning')
         else:
-            hashed_password = generate_password_hash(password)
-            users[username] = hashed_password
-            print(f"New user registered: {username} with hashed password: {hashed_password}")  # Debugging: print user and hashed password
+            users[username] = generate_password_hash(password)
             flash('Registration successful. Please log in.', 'success')
             return redirect(url_for('login'))
     return render_template('register.html')
 
-
-# Route to view all registered users
 @app.route('/view_users')
 def view_users():
     return render_template('view_users.html', users=users)
-
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
     df = pd.read_csv('cleaned_data.csv')
-    total_cars = len(df)
-    price_prediction_accuracy = 98.0
-    data_cleaned = 78.0
-    cleaned_data_stats = {
-        'missing_values': 123,
-        'invalid_entries': 45,
-        'outliers': 87,
-        'standardized': 5678
-    }
-    return render_template(
-        'dashboard.html',
+    return render_template('dashboard.html',
         username=session['username'],
-        total_cars=total_cars,
-        price_prediction_accuracy=price_prediction_accuracy,
-        data_cleaned=data_cleaned,
-        cleaned_data=cleaned_data_stats
+        total_cars=len(df),
+        price_prediction_accuracy=98.0,
+        data_cleaned=78.0,
+        cleaned_data={
+            'missing_values': 123,
+            'invalid_entries': 45,
+            'outliers': 87,
+            'standardized': 5678
+        }
     )
 
 @app.route('/analysis')
@@ -119,18 +93,16 @@ def analysis():
 @app.route('/iqr')
 @login_required
 def iqr():
-    iqr_stats = {
-        'q1': 15000,
-        'median': 22000,
-        'q3': 30000,
-        'iqr': 15000,
-        'lower_bound': 15000 - 1.5 * 15000,
-        'upper_bound': 30000 + 1.5 * 15000,
-        'outliers_removed': 42
-    }
-    return render_template(
-        'iqr.html',
-        iqr_stats=iqr_stats,
+    return render_template('iqr.html',
+        iqr_stats={
+            'q1': 15000,
+            'median': 22000,
+            'q3': 30000,
+            'iqr': 15000,
+            'lower_bound': 15000 - 1.5 * 15000,
+            'upper_bound': 30000 + 1.5 * 15000,
+            'outliers_removed': 42
+        },
         before_plot='static/images/before_iqr.png',
         after_plot='static/images/after_iqr.png'
     )
@@ -139,22 +111,29 @@ def iqr():
 @login_required
 def cleaned_data():
     df = pd.read_csv('cleaned_data.csv')
-    data_shape = df.shape
-    data_columns = df.columns.tolist()
-    data_sample = df.head(100).values.tolist()
-    cleaning_stats = {
-        'missing_values': 120,
-        'invalid_entries': 45,
-        'outliers': 38,
-        'standardized': 7
-    }
-    return render_template('cleaned_data.html', data_shape=data_shape, data_columns=data_columns, data_sample=data_sample, cleaning_stats=cleaning_stats)
+    return render_template('cleaned_data.html',
+        data_shape=df.shape,
+        data_columns=df.columns.tolist(),
+        data_sample=df.head(100).values.tolist(),
+        cleaning_stats={
+            'missing_values': 120,
+            'invalid_entries': 45,
+            'outliers': 38,
+            'standardized': 7
+        }
+    )
 
+# ✅ Download cleaned_data.csv route
+@app.route('/download_cleaned_data')
+@login_required
+def download_cleaned_data():
+    file_path = os.path.join(os.getcwd(), 'cleaned_data.csv')
+    return send_file(file_path, as_attachment=True)
 
 @app.route('/stats')
 @login_required
 def stats():
-    stats = {
+    return render_template('stats.html', stats={
         'kurtosis': 2.15,
         'skewness': 1.78,
         'skewness_values': {
@@ -162,22 +141,22 @@ def stats():
             'milage': 0.92,
             'model_year': -0.45
         }
-    }
-    return render_template('stats.html', stats=stats)
+    })
 
 @app.route('/time_series')
 @login_required
 def time_series():
-    ts_stats = {
-        'peak_year': 2021,
-        'peak_price': 27850.23,
-        'trend': 'Increasing',
-        'yoy_change': 7.4,
-        'top_years': [(2021, 27850.23, 150), (2020, 26400.88, 130)],
-        'bottom_years': [(2015, 15500.90, 60), (2016, 15888.12, 75)]
-    }
-    decomposition_img = 'seasonal_decomposition.png'
-    return render_template('time_series.html', ts_stats=ts_stats, decomposition_img=decomposition_img)
+    return render_template('time_series.html',
+        ts_stats={
+            'peak_year': 2021,
+            'peak_price': 27850.23,
+            'trend': 'Increasing',
+            'yoy_change': 7.4,
+            'top_years': [(2021, 27850.23, 150), (2020, 26400.88, 130)],
+            'bottom_years': [(2015, 15500.90, 60), (2016, 15888.12, 75)]
+        },
+        decomposition_img='seasonal_decomposition.png'
+    )
 
 @app.route('/correlation')
 @login_required
@@ -187,41 +166,28 @@ def correlation():
 @app.route('/regression')
 @login_required
 def regression():
-    metrics = {
+    return render_template('regression.html', metrics={
         'r2_score': 0.85,
         'mse': 2500000,
         'accuracy': 85.0
-    }
-    return render_template('regression.html', metrics=metrics)
+    })
 
 @app.route('/search_model', methods=['GET', 'POST'])
 @login_required
 def search_model():
     df = pd.read_csv('cleaned_data.csv')
-    
-    # Get unique brands and models from the dataset
     brands = sorted(df['brand'].dropna().unique())
+    models_by_brand = {brand: sorted(df[df['brand'] == brand]['model'].dropna().unique()) for brand in brands}
     
-    # Create a dictionary of models for each brand
-    models_by_brand = {}
-    for brand in brands:
-        models_by_brand[brand] = sorted(df[df['brand'] == brand]['model'].dropna().unique())
-    
-    results = None
-    selected_brand = None
-    selected_model = None
+    results, selected_brand, selected_model = None, None, None
 
     if request.method == 'POST':
         selected_brand = request.form['brand']
         selected_model = request.form['model']
-        # Filter based on brand and model
-        filtered_df = df[(
-            df['brand'] == selected_brand) & 
-            (df['model'] == selected_model)]
+        filtered_df = df[(df['brand'] == selected_brand) & (df['model'] == selected_model)]
         results = filtered_df.to_dict(orient='records')
 
-    return render_template(
-        'search_model.html',
+    return render_template('search_model.html',
         brands=brands,
         models_by_brand=models_by_brand,
         results=results,
@@ -233,41 +199,29 @@ def search_model():
 @login_required
 def predict_price():
     df = pd.read_csv('cleaned_data.csv')
+    df = df.dropna(subset=['brand', 'model', 'model_year', 'price'])
+    df['model_year'] = pd.to_numeric(df['model_year'], errors='coerce').dropna()
 
-    # Get unique brands and models from the dataset
-    brands = sorted(df['brand'].dropna().unique())
+    brands = sorted(df['brand'].unique())
+    models_by_brand = {brand: sorted(df[df['brand'] == brand]['model'].unique()) for brand in brands}
 
-    # Create a dictionary of models for each brand
-    models_by_brand = {}
-    for brand in brands:
-        models_by_brand[brand] = sorted(df[df['brand'] == brand]['model'].dropna().unique())
-    
-    prediction = None
-    selected_brand = None
-    selected_model = None
-    year = None
+    prediction, selected_brand, selected_model, year = None, None, None, None
 
     if request.method == 'POST':
         selected_brand = request.form['brand']
         selected_model = request.form['model']
         year = int(request.form['year'])
-
-        # Filter the dataset for the selected model
         filtered_df = df[(df['brand'] == selected_brand) & (df['model'] == selected_model)]
 
-        # Perform prediction if there's sufficient data
-        if 'model_year' in filtered_df.columns and len(filtered_df) > 1:
-            X = filtered_df[['model_year']]  # Use 'model_year' as the feature for prediction
-            y = filtered_df['price']  # The target is the price
+        if filtered_df['model_year'].nunique() > 1:
             from sklearn.linear_model import LinearRegression
             model = LinearRegression()
-            model.fit(X, y)
-            prediction = model.predict([[year]])[0]
+            model.fit(filtered_df[['model_year']], filtered_df['price'])
+            prediction = round(model.predict([[year]])[0], 2)
         else:
-            prediction = "Insufficient data for prediction."
+            prediction = "Insufficient variation in years for prediction."
 
-    return render_template(
-        'predict_price.html',
+    return render_template('predict_price.html',
         brands=brands,
         models_by_brand=models_by_brand,
         prediction=prediction,

@@ -11,7 +11,6 @@
             <i class="fas fa-search-dollar me-2"></i>Prediction Input
         </div>
         <div class="card-body">
-            <!-- Form to select brand, model, and year -->
             <form method="POST">
                 <!-- Select Brand -->
                 <div class="form-group mb-3">
@@ -25,7 +24,7 @@
                 </div>
 
                 <!-- Select Model -->
-                <div class="form-group mb-3" id="model_div" style="display: {% if not selected_brand %}none{% else %}block{% endif %};">
+                <div class="form-group mb-3" id="model_div" style="display: {% if selected_brand %}block{% else %}none{% endif %};">
                     <label for="model" class="fw-bold">Select Model:</label>
                     <select name="model" id="model" class="form-control" required>
                         {% if selected_brand %}
@@ -40,9 +39,9 @@
                 </div>
 
                 <!-- Enter Year -->
-                <div class="form-group mb-3" id="year_div" style="display: {% if not selected_model %}none{% else %}block{% endif %};">
+                <div class="form-group mb-3" id="year_div" style="display: {% if selected_model %}block{% else %}none{% endif %};">
                     <label for="year" class="fw-bold">Enter Year (e.g. 2026):</label>
-                    <input type="number" name="year" class="form-control" required>
+                    <input type="number" name="year" class="form-control" required value="{{ year or '' }}">
                 </div>
 
                 <button type="submit" class="btn mt-3 px-4" style="background-color: #764ba2; color: white;">
@@ -54,13 +53,19 @@
 
     <!-- Display Prediction Result -->
     {% if prediction %}
-    <div class="alert alert-info mt-4">
-        <strong>Predicted Price:</strong> {{ prediction }}
-    </div>
+        <div class="alert mt-4 {% if prediction is string and 'Insufficient' in prediction %}alert-warning{% else %}alert-info{% endif %}">
+            <strong>
+                {% if prediction is string and 'Insufficient' in prediction %}
+                    ⚠️ {{ prediction }}
+                {% else %}
+                    💰 Predicted Price: ${{ prediction }}
+                {% endif %}
+            </strong>
+        </div>
     {% endif %}
 </div>
 
-<!-- JavaScript to handle dynamic population of models based on brand -->
+<!-- JavaScript to handle dynamic population of models -->
 <script>
     document.getElementById('brand').addEventListener('change', function () {
         var selectedBrand = this.value;
@@ -70,7 +75,16 @@
 
         if (selectedBrand) {
             modelDiv.style.display = 'block';
-            updateModels(selectedBrand, modelSelect);
+            yearDiv.style.display = 'none';
+
+            var modelsForBrand = {{ models_by_brand | tojson }};
+            modelSelect.innerHTML = '';
+            modelsForBrand[selectedBrand].forEach(function (model) {
+                var option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                modelSelect.appendChild(option);
+            });
         } else {
             modelDiv.style.display = 'none';
             yearDiv.style.display = 'none';
@@ -82,19 +96,5 @@
         var yearDiv = document.getElementById('year_div');
         yearDiv.style.display = selectedModel ? 'block' : 'none';
     });
-
-    function updateModels(brand, modelSelect) {
-        var modelsForBrand = {{ models_by_brand | tojson }};
-
-        modelSelect.innerHTML = '';
-        if (modelsForBrand[brand]) {
-            modelsForBrand[brand].forEach(function (model) {
-                var option = document.createElement('option');
-                option.value = model;
-                option.textContent = model;
-                modelSelect.appendChild(option);
-            });
-        }
-    }
 </script>
 {% endblock %}
