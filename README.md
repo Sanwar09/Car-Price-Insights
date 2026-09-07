@@ -1,375 +1,414 @@
-# Car Data Analysis & Price Prediction System
+# 🚗 Car Market Data Analysis & Price Prediction Platform
 
-A comprehensive, production-ready Flask-based web platform for exploratory car data analysis, statistical metric reporting, Interquartile Range (IQR) data cleaning, multivariate correlation visualizers, and machine learning-powered vehicle resale price prediction.
+![Python Version](https://img.shields.io/badge/python-3.11%2B-blue.svg)
+![Framework](https://img.shields.io/badge/framework-Flask%20%2F%20FastAPI-green.svg)
+![Data Science](https://img.shields.io/badge/libraries-Pandas%20%7C%20NumPy%20%7C%20Scikit--Learn-orange.svg)
+![Docker](https://img.shields.io/badge/containerization-Docker%20%7C%20Docker%20Compose-blue.svg)
+![CI/CD](https://img.shields.io/badge/build-GitHub%20Actions-brightgreen.svg)
+![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)
+
+An end-to-end web platform and computational backend designed for exploratory automobile market data analysis, statistical metric reporting, Interquartile Range (IQR) outlier detection and cleaning, multivariate correlation modeling, time series price tracking, and machine learning price estimation.
 
 ---
 
-## Table of Contents
+## 📋 Table of Contents
 
-1. [Project Overview & Core Functionality](#1-project-overview--core-functionality)
-2. [Technical Stack & Dependency Map](#2-technical-stack--dependency-map)
-3. [Repository Directory Structure](#3-repository-directory-structure)
-4. [Dataset Requirements](#4-dataset-requirements)
-5. [Local Setup & Installation](#5-local-setup--installation)
+1. [Project Overview & Core Business Logic](#1-project-overview--core-business-logic)
+2. [Key Features](#2-key-features)
+3. [Architecture & Technology Stack](#3-architecture--technology-stack)
+4. [Annotated Repository Directory Structure](#4-annotated-repository-directory-structure)
+5. [Dataset Requirements](#5-dataset-requirements)
+6. [Getting Started & Installation](#6-getting-started--installation)
    - [Prerequisites](#prerequisites)
-   - [Step-by-Step Installation](#step-by-step-installation)
-   - [Running the Application](#running-the-application)
-6. [Troubleshooting & Edge Cases](#6-troubleshooting--edge-cases)
-   - [Port Conflict Resolution](#port-conflict-resolution)
-   - [Missing Input Data or Dynamic Output Files](#missing-input-data-or-dynamic-output-files)
-   - [ARM / Apple Silicon Architecture Compilation](#arm--apple-silicon-architecture-compilation)
-7. [Security & Environment Configuration](#7-security--environment-configuration)
-   - [Critical Security Warnings](#critical-security-warnings)
-   - [Environment Variables Reference](#environment-variables-reference)
-   - [Generating Secure Secret Keys](#generating-secure-secret-keys)
-8. [Production Deployment Guidance](#8-production-deployment-guidance)
-   - [Running via Gunicorn](#running-via-gunicorn)
-   - [Session Cookie & HTTPS Security](#session-cookie--https-security)
-9. [Application Routes & UI Reference](#9-application-routes--ui-reference)
-10. [License & Maintenance](#10-license--maintenance)
+   - [Local Setup Guide (Flask Workflow)](#local-setup-guide-flask-workflow)
+   - [Environment Configuration (`.env`)](#environment-configuration-env)
+   - [Running with Docker & Docker Compose](#running-with-docker--docker-compose)
+7. [Analytics & ML Processing Workflow (`car_analysis.py`)](#7-analytics--ml-processing-workflow-car_analysispy)
+   - [Workflow Pipeline](#workflow-pipeline)
+   - [Generated Report Artifacts](#generated-report-artifacts)
+8. [CI/CD Pipeline](#8-cicd-pipeline)
+9. [Troubleshooting & Edge Cases](#9-troubleshooting--edge-cases)
+   - [Dockerfile Entry Point vs. Local Flask Mismatch](#dockerfile-entry-point-vs-local-flask-mismatch)
+   - [Missing Input Data File Handling](#missing-input-data-file-handling)
+   - [Port Conflicts & Architecture Compilation](#port-conflicts--architecture-compilation)
+10. [Security & Production Hardening Guidelines](#10-security--production-hardening-guidelines)
+11. [Application Routes & UI Reference](#11-application-routes--ui-reference)
+12. [License & Maintenance](#12-license--maintenance)
 
 ---
 
-## 1. Project Overview & Core Functionality
+## 1. Project Overview & Core Business Logic
 
-The **Car Data Analysis & Price Prediction System** provides software developers, data analysts, system operators, and end-users with an integrated suite for analyzing automobile datasets, inspecting statistical parameters, stripping dataset noise/outliers via statistical bounds, and deploying machine learning models to estimate secondary market car values.
+The **Car Market Data Analysis & Price Prediction Platform** combines computational statistical analytics with interactive web instrumentation. The application is engineered to assist data analysts, developers, and automobile industry specialists in converting raw vehicular market data into actionable pricing and evaluation metrics.
 
-### Target Audience
-* **Data Analysts:** Conduct exploratory data analysis (EDA), evaluate statistical skewness, generate correlation heatmaps, and inspect dataset distributions before and after IQR outlier filtering.
-* **Software Developers:** Leverage a modular, extensible Flask architecture separating model training (`car_analysis.py`), application routing (`app.py`), dynamic outputs (`.txt` logs), and responsive user interface components (`templates/`).
-* **System Operators:** Configure production WSGI application servers (Gunicorn), enforce environment-driven configuration management, and manage administrative user access.
-
-### Core Functionality
-* **User Authentication & Session Management:**
-  * Role-based navigation, user registration (`/register`), secure login (`/login`), and persistent session tracking using Werkzeug password hashing.
-  * Extensible OAuth 2.0 client architecture powered by `flask-dance` and `requests-oauthlib`.
-* **Exploratory Data Analysis (EDA):**
-  * **Summary Statistics (`/stats`):** Detailed mean, median, standard deviation, and quartile breakdowns parsed from auto-generated `price_stats.txt`.
-  * **Skewness Analysis (`/skewness`):** Numerical column normality assessments and skewness distribution logs (`skewness_results.txt`).
-  * **Time Series & Trend Analysis (`/time-series`):** Temporal visualizers charting price movement across vehicle manufacturing years.
-  * **Multivariate Correlation (`/correlation`):** Feature matrix heatmaps illustrating cross-variable linear dependencies.
-* **Data Cleaning & Interquartile Range (IQR) Processing:**
-  * Interactive IQR parameter thresholding (`/iqr`) to identify low and high boundary outliers.
-  * Cleaned dataset inspection (`/cleaned-data`) allowing analysts to evaluate dataset fidelity post-filtering.
-* **Machine Learning Price Estimation:**
-  * Multivariate regression model execution (`car_analysis.py`) evaluating feature attributes such as mileage, vehicle age, engine capacity, and horsepower.
-  * Interactive inference form (`/predict`) providing real-time resale price predictions based on custom user inputs.
-  * Model validation metric outputs (`/regression`) detailing $R^2$ score, Mean Absolute Error (MAE), and Root Mean Squared Error (RMSE) recorded in `regression_metrics.txt`.
-* **User Administration:**
-  * Admin user directory overview (`/users`) for monitoring registered platform user accounts.
+### Core Business Objectives
+* **Data Cleaning & Noise Reduction:** Filter skewed vehicle valuations and statistical anomalies using custom Interquartile Range (IQR) thresholds.
+* **Exploratory Data Analysis (EDA):** Compute summary statistics, skewness distributions, temporal pricing trends, and multivariate linear correlations.
+* **Valuation Estimation:** Deploy machine learning regression models (e.g., Random Forest, Linear Regression) to estimate current vehicle resale market values based on key attributes such as mileage, engine capacity, vehicle age, and brand.
+* **Operational Web Interface:** Provide user authentication, administration controls, search filters, and real-time visualization dashboards.
 
 ---
 
-## 2. Technical Stack & Dependency Map
+## 2. Key Features
 
-The project relies on Python 3.10+ and standard analytical libraries pinned in `requirements.txt`:
-
-| Category | Component / Dependency | Exact Version | Purpose & Operational Function |
-| :--- | :--- | :--- | :--- |
-| **Web Framework & Backend** | **Python** | `3.10+` | Core execution runtime environment |
-| | **Flask** | `2.3.2` | Core WSGI web application framework & route controller engine |
-| | **Werkzeug** | `2.3.7` | Standard WSGI web server utility & password hashing module |
-| **Data Analytics & ML Engine** | **pandas** | `2.0.3` | High-performance dataframe manipulation & CSV parsing engine |
-| | **numpy** | `1.24.3` | Multidimensional numerical computing & vectorized matrix math |
-| | **scikit-learn** | `1.3.0` | Machine learning regression algorithms & model performance metrics |
-| | **scipy** | `1.10.1` | Advanced statistical computations (Skewness, Kurtosis, IQR bounds) |
-| **Data Visualization** | **matplotlib** | `3.7.2` | Programmatic chart generation & statistical graphic engine |
-| | **seaborn** | `0.12.2` | High-level statistical dataset visualizer overlays |
-| **Production Server** | **gunicorn** | `21.2.0` | Industrial-grade WSGI HTTP server for production deployment |
-| **OAuth Authentication** | **flask-dance** | `6.2.0` | Flask extension for managing OAuth consumer connections |
-| | **requests-oauthlib** | `1.3.1` | Transport layer support for OAuth 1.0 and OAuth 2.0 authentication |
+* **User Authentication & Session Management:** Secure registration (`/register`), login (`/login`), user listing (`/view_users`), and role-aware navigation protected with hashed passwords.
+* **Interactive Dashboards (`/dashboard`):** Real-time aggregation of statistical parameters, model lookups, and direct access to dataset inspection toolkits.
+* **Vehicle Price Prediction (`/predict_price`):** Dynamic input forms feeding regression engines to estimate market values for specific vehicle criteria.
+* **Statistical Metrics Reporting (`/stats`):** Automatic generation and interactive viewing of mean, median, standard deviation, variance, and percentiles (`price_stats.txt`).
+* **Skewness & Normality Analysis (`/skewness`):** Identification of distribution tailing across pricing and operational vehicle metrics (`skewness_results.txt`).
+* **Interquartile Range Outlier Filtering (`/iqr` & `/cleaned-data`):** Parameterized statistical boundary definition ($Q1 - 1.5 \times IQR$ to $Q3 + 1.5 \times IQR$) to strip spurious market outliers.
+* **Multivariate Correlation Visualizer (`/correlation`):** Matrix charts revealing cross-variable feature collinearity.
+* **Time Series Trend Analysis (`/time-series`):** Temporal price progression tracking mapped against manufacturing years.
+* **Model Search Engine (`/search_model`):** Filterable search interface for exploring historic vehicle listings by make, model, and year.
 
 ---
 
-## 3. Repository Directory Structure
-
-The following tree maps the physical repository file layout, highlighting core controller logic, analytical scripts, output text artifacts, and UI templates:
+## 3. Architecture & Technology Stack
 
 ```text
-.
-├── README.md                   # Primary project documentation and onboarding guide
-├── app.py                      # Main Flask application controllers, authentication routes, and view handlers
-├── car_analysis.py             # Core analytical script: dataset loading, IQR cleaning, stats generation, ML training
-├── price_stats.txt             # Dynamic output file storing descriptive statistics for target vehicle prices
-├── regression_metrics.txt      # Dynamic output file storing trained ML regression evaluation metrics (R², MAE, RMSE)
-├── requirements.txt            # Explicit third-party Python dependency version manifest
-├── skewness_results.txt        # Dynamic output file storing numerical feature skewness computations
-├── static/                     # Static web server assets
-│   ├── css/
-│   │   └── styles.css          # Primary stylesheet for responsive grid, custom forms, and metric cards
-│   └── js/
-│       └── scripts.js          # Front-end interactive DOM manipulation and form validation scripts
-├── templates/                  # Jinja2 HTML layout and page templates
-│   ├── base.html               # Master layout containing navigation bar, header assets, and footer
-│   ├── index.html              # Platform landing page presenting system features
-│   ├── login.html              # User login interface
-│   ├── register.html           # New user registration interface
-│   ├── dashboard.html          # Main platform dashboard summarizing analytics and prediction routes
-│   ├── analysis.html           # Deep-dive analytics overview landing page
-│   ├── cleaned_data.html       # Dataset display showing filtered data post-IQR outlier removal
-│   ├── correlation.html        # Multivariate feature correlation visualizers and heatmaps
-│   ├── iqr.html                # Interquartile Range outlier parameters and statistical boundary reports
-│   ├── predict_price.html      # Interactive interface to submit vehicle parameters for price inference
-│   ├── regression.html         # ML performance metrics display (R², MAE, RMSE metrics)
-│   ├── search_model.html       # Query page for searching specific vehicle models within the dataset
-│   ├── skewness_results.html   # Detailed column skewness metrics report view
-│   ├── stats.html              # General summary statistics report for the vehicle dataset
-│   ├── time_series.html        # Vehicle pricing temporal trends across manufacturing years
-│   └── view_users.html         # Administrative user management panel
-└── [Scratchpad / Dev Artifacts]
-    ├── aa.py                   # Sandbox / local developer scratchpad script (add to .gitignore)
-    └── tempCodeRunnerFile.py   # Code runner temporary execution file (add to .gitignore)
+  +-----------------------------------------------------------------------+
+  |                          Web Frontend UI                              |
+  |             (HTML5 / CSS3 / JavaScript / Jinja2 Templates)             |
+  +-----------------------------------+-----------------------------------+
+                                      |
+                                      v
+  +-----------------------------------------------------------------------+
+  |                     Backend Application Engine                        |
+  |            Flask (app.py) / FastAPI App Entrypoint (app.main)        |
+  +-----------------------------------+-----------------------------------+
+                                      |
+                     +----------------+----------------+
+                     |                                 |
+                     v                                 v
+  +----------------------------------+   +--------------------------------+
+  |  Data Science & Processing Engine|   | Dynamic Analytics Report Files |
+  |       (car_analysis.py)          |   |  - price_stats.txt             |
+  |   Pandas | NumPy | Scikit-Learn  |   |  - regression_metrics.txt      |
+  +----------------------------------+   |  - skewness_results.txt        |
+                                         +--------------------------------+
 ```
 
-### Dynamic Metric Log Files
-* **`price_stats.txt`:** Generated during dataset processing by `car_analysis.py`. Contains mean, std dev, minimum, maximum, and quartile thresholds for car prices. Rendered in `/stats`.
-* **`regression_metrics.txt`:** Updated whenever machine learning models undergo re-training. Contains key performance metrics ($R^2$, MAE, RMSE). Rendered in `/regression`.
-* **`skewness_results.txt`:** Captures mathematical skew values for numerical features to identify log-transform requirements. Rendered in `/skewness`.
+### Technology Breakdown
+
+| Layer | Technology / Library | Purpose |
+|---|---|---|
+| **Language** | Python 3.11+ | Primary application runtime |
+| **Web Framework** | Flask 3.x / FastAPI | Routing, controller execution, and session management |
+| **Templating Engine** | Jinja2 | Dynamic HTML UI rendering |
+| **Frontend Utilities** | HTML5, CSS3 (`static/css/styles.css`), Vanilla JS (`static/js/scripts.js`) | User interaction and visual dashboard styling |
+| **Data Processing** | Pandas, NumPy | Data manipulation, matrix calculations, and dataset transformations |
+| **Machine Learning & Stats** | Scikit-Learn, Statsmodels | Regression modeling, IQR calculations, skewness assessment |
+| **Containerization** | Docker, Docker Compose | Application containerization and service orchestration |
+| **CI/CD Automation** | GitHub Actions (`.github/workflows/ci.yml`) | Continuous Integration, automated testing, and linting |
 
 ---
 
-## 4. Dataset Requirements
+## 4. Annotated Repository Directory Structure
 
-The platform relies on tabular vehicle dataset files (e.g., `car_data.csv` or `cars.csv`) located in the project root directory when `car_analysis.py` executes.
-
-### Expected Data Schema
-For optimal performance, input CSV files should include the following standard fields:
-
-| Column Name | Expected Type | Description |
-| :--- | :--- | :--- |
-| `Price` / `Selling_Price` | Float / Int | Resale value (Target column for regression and price stats) |
-| `Year` | Int | Vehicle manufacturing year (used for age calculation and time-series plots) |
-| `Present_Price` | Float | Original showroom or retail list price |
-| `Kms_Driven` / `Mileage` | Int / Float | Total distance accumulated on vehicle odometer |
-| `Fuel_Type` | Categorical | Fuel type (`Petrol`, `Diesel`, `CNG`, `Electric`) |
-| `Seller_Type` | Categorical | Listing party context (`Dealer`, `Individual`) |
-| `Transmission` | Categorical | Transmission mechanism (`Manual`, `Automatic`) |
-| `Owner` | Int | Count of previous vehicle owners |
+```text
+car-analysis-platform/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                 # GitHub Actions pipeline for linting, testing, and Docker verification
+├── static/
+│   ├── css/
+│   │   └── styles.css             # Main stylesheet for dynamic web pages and responsive layout
+│   └── js/
+│       └── scripts.js             # Client-side user interactions, form validation, and dashboard logic
+├── templates/                     # Jinja2 HTML layout templates
+│   ├── analysis.html              # High-level data analysis portal
+│   ├── base.html                  # Core layout frame, header, navigation bar, and footer
+│   ├── cleaned_data.html          # View raw dataset table post-IQR outlier removal
+│   ├── correlation.html           # Feature correlation heatmaps and matrix display
+│   ├── dashboard.html             # Central analytics overview dashboard
+│   ├── index.html                 # Public landing page
+│   ├── iqr.html                   # Interquartile range threshold customization UI
+│   ├── login.html                 # User authentication login form
+│   ├── predict_price.html         # Interactive form for machine learning vehicle price inference
+│   ├── register.html              # Account creation interface
+│   ├── regression.html            # Model training outputs and evaluation metrics ($R^2$, RMSE, MAE)
+│   ├── search_model.html          # Vehicle make/model search tool
+│   ├── stats.html                 # Rendered view of general summary statistics
+│   ├── time_series.html           # Price trends across manufacturing years
+│   └── view_users.html            # User account management view
+├── .env.example                   # Standard environment variable template
+├── Dockerfile                     # Container construction instructions
+├── docker-compose.yml             # Service orchestration configuration
+├── app.py                         # Primary Flask web application and HTTP route handlers
+├── car_analysis.py                # Standalone data analysis, feature engineering, and ML script
+├── aa.py                          # Auxiliary operational script / workspace helper
+├── requirements.txt               # Locked Python dependencies list
+├── price_stats.txt                # Dynamic output: Generated price summary statistics
+├── regression_metrics.txt         # Dynamic output: Generated model accuracy & error metrics
+├── skewness_results.txt           # Dynamic output: Column-wise distribution skewness calculations
+└── README.md                      # System documentation (this file)
+```
 
 ---
 
-## 5. Local Setup & Installation
+## 5. Dataset Requirements
+
+To enable `car_analysis.py` and the application's backend statistical processors to operate correctly, a raw vehicle dataset in CSV format (e.g., `car_data.csv` or `cars.csv`) must be present in the project root directory or referenced path.
+
+### Expected Schema Specifications
+
+| Column Name | Data Type | Description | Example |
+|---|---|---|---|
+| `Year` | Integer | Manufacturing year of the vehicle | `2018` |
+| `Selling_Price` | Float / Int | Price at which the car is listed/sold ($USD) | `12500.00` |
+| `Present_Price` | Float / Int | Current showroom/new retail price ($USD) | `20000.00` |
+| `Kms_Driven` | Integer | Total distance odometer reading in kilometers | `45000` |
+| `Fuel_Type` | String / Categorical | Fuel system type (`Petrol`, `Diesel`, `CNG`) | `Petrol` |
+| `Seller_Type` | String / Categorical | Sales channel (`Dealer`, `Individual`) | `Dealer` |
+| `Transmission` | String / Categorical | Gearbox type (`Manual`, `Automatic`) | `Manual` |
+| `Owner` | Integer | Number of previous owners | `0` |
+
+*Note: If no dataset is present upon startup, `car_analysis.py` will attempt to fall back to a mock sample generator or output missing-file alerts in the generated logs.*
+
+---
+
+## 6. Getting Started & Installation
 
 ### Prerequisites
-* **Python Runtime:** Python **3.10** or **3.11** installed. Verify via `python --version` or `python3 --version`.
-* **Git:** Installed and configured in environment PATH.
-* **Pip Package Manager:** Upgrade pip prior to installation:
-  ```bash
-  python -m pip install --upgrade pip
-  ```
+* **Python:** Version 3.11 or higher installed on host machine.
+* **Git:** Version control system.
+* **Docker & Docker Compose:** Required only for containerized deployment.
 
 ---
 
-### Step-by-Step Installation
+### Local Setup Guide (Flask Workflow)
 
-#### 1. Clone the Repository
-```bash
-git clone https://github.com/your-org/car-data-analysis.git
-cd car-data-analysis
-```
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/your-org/car-analysis-platform.git
+   cd car-analysis-platform
+   ```
 
-#### 2. Create and Activate Virtual Environment (`venv`)
+2. **Create and Activate a Virtual Environment:**
+   * **Linux / macOS:**
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+   * **Windows (Command Prompt / PowerShell):**
+     ```cmd
+     python -m venv venv
+     venv\Scripts\activate
+     ```
 
-* **macOS / Linux:**
-  ```bash
-  python3 -m venv venv
-  source venv/bin/activate
-  ```
+3. **Install Dependencies:**
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
 
-* **Windows (PowerShell):**
-  ```powershell
-  python -m venv venv
-  .\venv\Scripts\Activate.ps1
-  ```
+4. **Initialize Environment Variables:**
+   Copy the example file to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   *(On Windows CMD: `copy .env.example .env`)*
 
-* **Windows (Command Prompt):**
-  ```cmd
-  python -m venv venv
-  .\venv\Scripts\activate.bat
-  ```
-
-#### 3. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
----
-
-### Running the Application
-
-#### Environment Setup & Launch
-
-* **macOS / Linux (Bash):**
-  ```bash
-  export FLASK_APP=app.py
-  export FLASK_ENV=development
-  export FLASK_DEBUG=1
-  export FLASK_SECRET_KEY="dev_local_secret_key_change_in_production"
-  flask run
-  ```
-
-* **Windows (PowerShell):**
-  ```powershell
-  $env:FLASK_APP = "app.py"
-  $env:FLASK_ENV = "development"
-  $env:FLASK_DEBUG = "1"
-  $env:FLASK_SECRET_KEY = "dev_local_secret_key_change_in_production"
-  flask run
-  ```
-
-* **Direct Execution via Python:**
-  ```bash
-  python app.py
-  ```
-
-Open your web browser and navigate to: **`http://127.0.0.1:5000`**
-
----
-
-## 6. Troubleshooting & Edge Cases
-
-### Port Conflict Resolution
-If port `5000` is already in use by another service (such as macOS AirPlay Receiver or a background process):
-
-* **Override Port via Flask CLI:**
-  ```bash
-  flask run --port 5001
-  ```
-* **Override Port via Python Scripting:**
-  Modify `app.py` entry point:
-  ```python
-  if __name__ == "__main__":
-      app.run(host="127.0.0.1", port=5001, debug=True)
-  ```
-* **Terminate Occupied Port (macOS/Linux):**
-  ```bash
-  lsof -ti:5000 | xargs kill -9
-  ```
-
-### Missing Input Data or Dynamic Output Files
-If accessing `/stats`, `/regression`, or `/skewness` produces a `FileNotFoundError`:
-1. Place a valid `car_data.csv` in the root folder.
-2. Manually run `car_analysis.py` to regenerate the dynamic text logs:
+5. **Execute Analytics Pre-Processing Script:**
+   Generate initial reports (`price_stats.txt`, `regression_metrics.txt`, `skewness_results.txt`):
    ```bash
    python car_analysis.py
    ```
-3. Confirm that `price_stats.txt`, `regression_metrics.txt`, and `skewness_results.txt` are created in the working directory.
 
-### ARM / Apple Silicon Architecture Compilation
-On Apple Silicon (M1/M2/M3) or ARM64 Linux, compiling binary C-extensions for older versions of Scikit-Learn or SciPy can fail if wheel pre-builds are unavailable.
-* **Recommended Fix:** Ensure Python **3.10** or **3.11** is used (where binary wheels are available).
-* **Install Command for Wheel Resolution:**
+6. **Start the Flask Application:**
+   ```bash
+   python app.py
+   ```
+   Access the web interface in your browser at `http://127.0.0.1:5000/`.
+
+---
+
+### Environment Configuration (`.env`)
+
+Configure operational settings in your local `.env` file:
+
+```env
+# Flask Application Configuration
+FLASK_APP=app.py
+FLASK_ENV=development
+FLASK_DEBUG=1
+SECRET_KEY=c3a9f8b42e7d101569a4e82b7f3d90e14a1c5b8d9e2f3a4b5c6d7e8f9a0b1c2d
+
+# Database & Path Configurations
+DATABASE_URL=sqlite:///car_platform.db
+DATASET_PATH=car_data.csv
+
+# Server Port
+PORT=5000
+```
+
+---
+
+### Running with Docker & Docker Compose
+
+#### Option 1: Multi-Container Orchestration (Docker Compose)
+To spin up the containerized environment:
+
+```bash
+docker-compose up --build -d
+```
+The application will be accessible at `http://localhost:8000` (or `http://localhost:5000` based on `docker-compose.yml` port mappings).
+
+To stop the containers:
+```bash
+docker-compose down
+```
+
+#### Option 2: Single Container Execution via Dockerfile
+
+1. **Build the Image:**
+   ```bash
+   docker build -t car-analysis-app .
+   ```
+
+2. **Run the Container:**
+   ```bash
+   docker run -d -p 5000:5000 --name car-analysis-container --env-file .env car-analysis-app
+   ```
+
+---
+
+## 7. Analytics & ML Processing Workflow (`car_analysis.py`)
+
+The `car_analysis.py` module acts as the core statistical engine. It runs independently or as a background module during web service initialization.
+
+```text
+                   +---------------------------+
+                   |   Raw Input Data (CSV)    |
+                   +-------------+-------------+
+                                 |
+                                 v
+                   +---------------------------+
+                   |  Exploratory Data Analysis|
+                   +-------------+-------------+
+                                 |
+         +-----------------------+-----------------------+
+         |                       |                       |
+         v                       v                       v
++------------------+   +-------------------+   +--------------------+
+| Price Statistics |   | Skewness Assessment|   | Outlier Removal    |
+| Mean, Median, Std|   | Tail Distribution |   | Bounds (IQR Method)|
++--------+---------+   +---------+---------+   +---------+----------+
+         |                       |                       |
+         v                       v                       v
+  price_stats.txt       skewness_results.txt     Cleaned Dataset
+                                                         |
+                                                         v
+                                               +--------------------+
+                                               | Regression Model   |
+                                               | Feature Engineering|
+                                               +---------+----------+
+                                                         |
+                                                         v
+                                             regression_metrics.txt
+```
+
+### Generated Report Artifacts
+
+* **`price_stats.txt`:** Contains detailed mathematical breakdowns for target variables:
+  * Mean, Median, Variance, Standard Deviation
+  * Quartiles ($25\%$, $50\%$, $75\%$) and Min/Max ranges
+* **`skewness_results.txt`:** Reports skewness coefficients for numeric columns:
+  * Positive/Right-skewed vs. Negative/Left-skewed feature distribution indicators
+  * Log-transform recommendations for machine learning preprocessing
+* **`regression_metrics.txt`:** Summarizes evaluation scores for price prediction models:
+  * Coefficient of Determination ($R^2$ Score)
+  * Mean Absolute Error (MAE)
+  * Root Mean Squared Error (RMSE)
+
+---
+
+## 8. CI/CD Pipeline
+
+Continuous Integration is powered by GitHub Actions in `.github/workflows/ci.yml`.
+
+### Workflow Workflow Pipeline Jobs:
+1. **Lint & Code Quality Check:** Runs `flake8` or `black` to enforce Python standard style compliance.
+2. **Dependency Verification:** Validates `requirements.txt` compatibility under Python 3.11+.
+3. **Automated Analytics Execution:** Executes `python car_analysis.py` in test mode to verify output file generation (`price_stats.txt`, `regression_metrics.txt`, `skewness_results.txt`).
+4. **Docker Image Build Verification:** Executes `docker build` to guarantee container compilation validity prior to main branch merges.
+
+---
+
+## 9. Troubleshooting & Edge Cases
+
+### Dockerfile Entry Point vs. Local Flask Mismatch
+* **Issue:** The repository Dockerfile specifies an entry command referencing `app.main:app` (FastAPI/Uvicorn runtime structure), whereas running locally uses `python app.py` (Flask execution).
+* **Resolution / Standard Operating Procedure:**
+  * **For Local Flask Testing:** Always execute `python app.py` within your active virtual environment.
+  * **For Docker Deployment:** If using `docker-compose.yml`, verify whether Uvicorn or Flask Gunicorn is selected as the primary process manager. If deployment errors occur in single-container mode, align the `Dockerfile` `CMD` command with `CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]` or `CMD ["python", "app.py"]`.
+
+### Missing Input Data File Handling
+* **Issue:** Executing `car_analysis.py` without a dataset present results in `FileNotFoundError`.
+* **Resolution:** Ensure `car_data.csv` is placed in the project root directory. Alternatively, update the dataset path variable in `.env`:
   ```bash
-  pip install --prefer-binary -r requirements.txt
+  DATASET_PATH=/path/to/your/dataset.csv
+  ```
+
+### Port Conflicts & Architecture Compilation
+* **Port 5000 in Use (macOS AirPlay / Control Center Conflict):**
+  On macOS Monterey or newer, system services may occupy port `5000`. You can change the port in `app.py` or run:
+  ```bash
+  flask run --port 5001
+  ```
+* **ARM64 / Apple Silicon Compilation Issues:**
+  If Scikit-Learn or NumPy fails to compile under Docker on Apple Silicon ($M1/M2/M3$), ensure your `Dockerfile` uses an explicit platform specifier:
+  ```dockerfile
+  FROM --platform=linux/amd64 python:3.11-slim
   ```
 
 ---
 
-## 7. Security & Environment Configuration
+## 10. Security & Production Hardening Guidelines
 
-### Critical Security Warnings
-
-> ⚠️ **HIGH RISK SECURITY NOTICE**
->
-> 1. **Hardcoded Fallback Keys:** `app.py` contains fallback secret key declarations (e.g., `app.secret_key = 'your_secret_key_here'`) intended strictly for local development offline fallback. **Never run production servers with fallback keys.** Weak or public secret keys allow session forgery, cookie tampering, and unauthorized administrative access.
-> 2. **Werkzeug Debug Console:** Setting `FLASK_DEBUG=1` or `debug=True` exposes an interactive web debugger capable of arbitrary Python code execution. Set `FLASK_DEBUG=0` in production.
-> 3. **OAuth Insecure Transport:** Setting `OAUTHLIB_INSECURE_TRANSPORT=1` allows unencrypted HTTP transport for OAuth testing. This variable **MUST NOT** be set in production environments.
-
----
-
-### Environment Variables Reference
-
-Configure environment settings using a `.env` file in the root folder (ensure `.env` is added to `.gitignore`):
-
-| Variable Name | Dev Default | Production Requirement | Description |
-| :--- | :---: | :---: | :--- |
-| `FLASK_APP` | `app.py` | `app.py` | Main application entry file |
-| `FLASK_ENV` | `development` | `production` | Execution environment context |
-| `FLASK_DEBUG` | `1` | `0` | Disables interactive debug console in production |
-| `FLASK_SECRET_KEY` | *(Fallback)* | **REQUIRED** | Cryptographically strong random key for session signing |
-| `OAUTHLIB_INSECURE_TRANSPORT` | `1` | **UNSET / `0`** | Must be disabled in production to enforce HTTPS for OAuth |
-| `PORT` | `5000` | `8000` | Port bound by the web server |
+1. **Secrets Management:**
+   * **NEVER** commit production `.env` files or hardcode API keys into templates/scripts.
+   * Generate secure session keys for production:
+     ```bash
+     python -c 'import secrets; print(secrets.token_hex(32))'
+     ```
+2. **Session Security & Cookies:**
+   * Enable `SESSION_COOKIE_HTTPONLY = True`, `SESSION_COOKIE_SECURE = True`, and `SESSION_COOKIE_SAMESITE = 'Lax'` when serving over HTTPS.
+3. **Machine Learning Model Deserialization Safety:**
+   * Avoid loading untrusted `.pkl` or `.joblib` model binaries from public or unverified remote sources to prevent Arbitrary Code Execution vulnerabilities. Verify SHA-256 hashes for serialized weights.
+4. **Non-Root Docker Container Execution:**
+   * Ensure container processes run under an unprivileged user inside the `Dockerfile`:
+     ```dockerfile
+     RUN useradd -m appuser
+     USER appuser
+     ```
 
 ---
 
-### Generating Secure Secret Keys
+## 11. Application Routes & UI Reference
 
-Generate a production-ready 256-bit secret key using Python's native `secrets` module:
-
-```bash
-python3 -c "import secrets; print(secrets.token_hex(32))"
-```
-
-Copy the generated output string and set it as your environment variable:
-
-```bash
-export FLASK_SECRET_KEY="<paste_generated_32_byte_hex_string_here>"
-```
-
----
-
-## 8. Production Deployment Guidance
-
-Production deployments must serve the Flask application using an industrial WSGI HTTP server such as **Gunicorn**, placed behind a reverse proxy (e.g., Nginx or AWS ALB) enforcing TLS/HTTPS termination.
-
-### Running via Gunicorn
-
-Do **not** use `python app.py` or `flask run` in production. Launch using Gunicorn with worker processes:
-
-```bash
-# 1. Export production variables
-export FLASK_ENV=production
-export FLASK_DEBUG=0
-export FLASK_SECRET_KEY="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
-export OAUTHLIB_INSECURE_TRANSPORT=0
-
-# 2. Launch Gunicorn WSGI server
-gunicorn --workers 4 --threads 2 --bind 0.0.0.0:8000 "app:app"
-```
-
-### Session Cookie & HTTPS Security
-
-To prevent session hijacking and Cross-Site Scripting (XSS) cookie theft, ensure production session cookie security configurations are active in Flask:
-
-```python
-# Security configuration block for production app initialization
-app.config.update(
-    SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SECURE=True,     # Requires active HTTPS connection
-    SESSION_COOKIE_SAMESITE='Lax',
-    PERMANENT_SESSION_LIFETIME=3600 # 1 hour session expiration
-)
-```
+| Route Path | HTTP Method | Associated Template | Purpose / Description |
+|---|---|---|---|
+| `/` | GET | `index.html` | Public landing page and platform introduction |
+| `/login` | GET, POST | `login.html` | User login authentication interface |
+| `/register` | GET, POST | `register.html` | User registration and account creation |
+| `/dashboard` | GET | `dashboard.html` | Core metrics summary dashboard |
+| `/predict_price` | GET, POST | `predict_price.html` | Price estimation ML model inference form |
+| `/stats` | GET | `stats.html` | Displays dataset summary statistics from `price_stats.txt` |
+| `/skewness` | GET | `analysis.html` | Displays numerical distribution skewness metrics |
+| `/iqr` | GET, POST | `iqr.html` | Configures Interquartile Range outlier filtering |
+| `/cleaned-data` | GET | `cleaned_data.html` | Inspects cleaned dataset post-IQR processing |
+| `/correlation` | GET | `correlation.html` | Feature correlation matrix visualizer |
+| `/time-series` | GET | `time_series.html` | Temporal price trend tracker across manufacturing years |
+| `/regression` | GET | `regression.html` | Machine learning model evaluation metrics ($R^2$, MAE, RMSE) |
+| `/search_model` | GET, POST | `search_model.html` | Search interface for filtering car models |
+| `/view_users` | GET | `view_users.html` | Administrative view for account auditing |
 
 ---
 
-## 9. Application Routes & UI Reference
+## 12. License & Maintenance
 
-Below is the complete map of active application routes, associated HTTP methods, target Jinja2 templates, and operational descriptions:
+This project is distributed under the **MIT License**.
 
-| Route Path | HTTP Method(s) | Template Rendered | Functional Purpose |
-| :--- | :---: | :--- | :--- |
-| `/` | `GET` | `index.html` | Application landing homepage |
-| `/login` | `GET`, `POST` | `login.html` | User authentication & credential submission |
-| `/register` | `GET`, `POST` | `register.html` | New user registration form |
-| `/logout` | `GET` | *Redirect to `/`* | Session invalidation and logout handler |
-| `/dashboard` | `GET` | `dashboard.html` | Analytics dashboard and core feature navigation hub |
-| `/analysis` | `GET` | `analysis.html` | Deep-dive analytical tools overview |
-| `/stats` | `GET` | `stats.html` | Renders price summary stats parsed from `price_stats.txt` |
-| `/skewness` | `GET` | `skewness_results.html` | Visualizes feature skewness metrics from `skewness_results.txt` |
-| `/iqr` | `GET`, `POST` | `iqr.html` | Interquartile Range parameters input & boundary evaluation |
-| `/cleaned-data` | `GET` | `cleaned_data.html` | Displays dataset view with IQR outliers stripped |
-| `/correlation` | `GET` | `correlation.html` | Generates feature correlation matrix and interaction maps |
-| `/time-series` | `GET` | `time_series.html` | Renders temporal vehicle price trends across manufacturing years |
-| `/predict` | `GET`, `POST` | `predict_price.html` | ML form for submitting vehicle attributes & receiving price predictions |
-| `/regression` | `GET` | `regression.html` | ML regression validation metrics parsed from `regression_metrics.txt` |
-| `/search` | `GET`, `POST` | `search_model.html` | Vehicle model search and filtering interface |
-| `/users` | `GET` | `view_users.html` | Administrative user directory and account inspection view |
-
----
-
-## 10. License & Maintenance
-
-* **System Architecture:** Flask WSGI Application with Data Science & ML Engine.
-* **License:** Proprietary / Educational Reference (Consult project repository root for repository-specific licensing terms).
-* **Technical Maintenance:** For issues, bug reports, or enhancement suggestions, please open a ticket in the project repository issue tracker.
+**Maintainer:** Development & Analytics Engineering Team  
+**Issue Tracking & Support:** Please log technical questions or bug reports in the repository's GitHub Issues tracker.
